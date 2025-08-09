@@ -23,7 +23,8 @@ export default function DemoPage() {
     const text = input.trim();
     if (!text || loading) return;
 
-    const newMsgs = [...messages, { role: 'user', content: text }];
+    const userMsg: ChatMessage = { role: 'user', content: text };
+    const newMsgs: ChatMessage[] = [...messages, userMsg];
     setMessages(newMsgs);
     setInput('');
     setLoading(true);
@@ -41,13 +42,14 @@ export default function DemoPage() {
       }
 
       const data = await resp.json();
-      const msg = data?.message as { role?: string; content?: string; tool_calls?: any };
+      const msg = data?.message as { role?: string; content?: string; tool_calls?: unknown };
 
       // Basic display. Tool-call support can be added tomorrow.
       const content = msg?.content ?? '[No content]';
       setMessages(m => [...m, { role: 'assistant', content }]);
-    } catch (err: any) {
-      setMessages(m => [...m, { role: 'assistant', content: `Error: ${err?.message || String(err)}` }]);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setMessages(m => [...m, { role: 'assistant', content: `Error: ${message}` }]);
     } finally {
       setLoading(false);
     }
