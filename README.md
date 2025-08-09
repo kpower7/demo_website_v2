@@ -36,6 +36,7 @@ uvicorn main:app --reload --host 127.0.0.1 --port 8001
 cd "C:\Users\k_pow\OneDrive\Documents\MIT\MIT TPP\demo_website_v2\demo_website_v2"
 npm install
 npx netlify-cli@latest dev
+#npx netlify-cli@latest dev --live
 # If npx has cache/permission issues, install globally once:
 # npm i -g netlify-cli && netlify dev
 ```
