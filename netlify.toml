@@ -18,8 +18,8 @@
 
 [[redirects]]
   from = "/demo"
-  to = "/demo/index.html"
-  status = 200
+  to = "/voice"
+  status = 301
 
 [[redirects]]
   from = "/voice"

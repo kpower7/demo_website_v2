@@ -22,7 +22,7 @@ export default function Home() {
         <div className="hidden md:flex items-center gap-8 text-gray-300">
           <Link href="/" className="hover:text-cyan-400 transition-colors">Home</Link>
           <a href="#demo" className="hover:text-cyan-400 transition-colors">Video</a>
-          <Link href="/demo" className="hover:text-cyan-400 transition-colors">Live Demo</Link>
+          <Link href="/voice" className="hover:text-cyan-400 transition-colors">Voice</Link>
           <a href="mailto:kevpower@mit.edu" className="hover:text-cyan-400 transition-colors">Contact</a>
         </div>
         <button
@@ -46,7 +46,7 @@ export default function Home() {
           <div className="container py-4 flex flex-col gap-4">
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Home</Link>
             <a href="#demo" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Video</a>
-            <Link href="/demo" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Live Demo</Link>
+            <Link href="/voice" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Voice</Link>
             <a href="mailto:kevpower@mit.edu" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Contact</a>
           </div>
         </div>
@@ -58,11 +58,11 @@ export default function Home() {
           Agentic AI Hackathon Template
         </h1>
         <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
-          Next.js + Tailwind front-end, Netlify Functions proxy to Hugging Face Router (Grok GPT-OSS-120B), and FastAPI backend scaffold for tool-calling.
+          Next.js + Tailwind front-end, Netlify Functions + ElevenLabs Agent (GPT-5) for real-time voice, and a FastAPI backend scaffold for tool-calling.
         </p>
         <p className="mt-3 text-cyan-300 font-semibold">Patent Pending • Built by Kevin Power</p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/demo" className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Try Live Demo</Link>
+          <Link href="/voice" className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Try Voice Demo</Link>
           <a href="#demo" className="px-8 py-4 rounded-full border-2 border-cyan-400 text-cyan-400 font-semibold hover:bg-cyan-400 hover:text-white transition-all">Watch Video</a>
         </div>
       </header>
@@ -92,7 +92,7 @@ export default function Home() {
               />
             </div>
             <div className="text-center mt-6">
-              <Link href="/demo" className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Go to Live Demo</Link>
+              <Link href="/voice" className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Go to Voice Demo</Link>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function Home() {
         <div className="container py-8 text-sm text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>© {new Date().getFullYear()} Kevin Power • All Rights Reserved</p>
           <div className="flex gap-4">
-            <a className="hover:text-cyan-300" href="/demo">Live Demo</a>
+            <a className="hover:text-cyan-300" href="/voice">Voice</a>
             <a className="hover:text-cyan-300" href="mailto:kevpower@mit.edu">Contact</a>
           </div>
         </div>

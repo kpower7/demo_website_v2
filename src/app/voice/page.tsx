@@ -77,7 +77,7 @@ export default function VoicePage() {
       }
 
       const qs = PUBLIC_AGENT_ID ? `?agent_id=${encodeURIComponent(PUBLIC_AGENT_ID)}` : "";
-      const resp = await fetch(`/.netlify/functions/eleven-signed-url${qs}`);
+      const resp = await fetch(`/.netlify/functions/elevenSignedUrl${qs}`);
       if (!resp.ok) {
         const text = await resp.text();
         throw new Error(text || "Failed to obtain signed URL");

@@ -4,7 +4,7 @@ A modern web-based supply chain optimization platform built with Next.js fronten
 
 ## 🚀 Quick Start (AI Hackathon Template)
 
-These instructions run the Next.js site with the Netlify Function proxy to Hugging Face locally, and (optionally) start the FastAPI backend scaffold.
+These instructions run the Next.js site with Netlify Functions and the ElevenLabs real-time voice agent locally, and (optionally) start the FastAPI backend scaffold.
 
 ### Prerequisites
 - Node.js 18+
@@ -14,7 +14,6 @@ These instructions run the Next.js site with the Netlify Function proxy to Huggi
 ### Environment
 Create a `.env` file in the project root:
 ```
-HF_TOKEN=your_huggingface_token
 ELEVEN_API_KEY=your_elevenlabs_api_key
 ELEVEN_AGENT_ID=your_elevenlabs_agent_id
 # Optional (client-side convenience): used by /voice page in dev
@@ -43,7 +42,6 @@ npx netlify-cli@latest dev
 
 ### Access Points
 - Site: http://localhost:8888
-- Demo chatbot: http://localhost:8888/demo
 - Voice coach (real-time): http://localhost:8888/voice
 - Backend health (optional): http://127.0.0.1:8001/health
 
