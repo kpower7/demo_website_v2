@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import requests
@@ -79,10 +80,14 @@ def search_videos(query: str, max_results: int = 10, use_official_api: Optional[
             "part": "snippet",
             "type": "video",
             "maxResults": 25,
-            "order": "viewCount",
+            # Prefer recent uploads
+            "order": "date",
             "q": query,
             "key": settings.youtube_api_key,
         }
+        # Limit to last 30 days for freshness
+        published_after = (datetime.now(timezone.utc) - timedelta(days=30)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        params["publishedAfter"] = published_after
         resp = session.get(YOUTUBE_SEARCH_URL, params=params, timeout=20)
         resp.raise_for_status()
         data = resp.json()
@@ -127,8 +132,45 @@ def search_videos(query: str, max_results: int = 10, use_official_api: Optional[
         logger.warning("youtubesearchpython not installed; cannot fallback search")
         return []
 
-    vs = VideosSearch(query, limit=max(20, max_results))
-    res = vs.result() or {}
+    def _parse_published_time(t: Optional[str]) -> Optional[datetime]:
+        if not t or not isinstance(t, str):
+            return None
+        # Examples: "3 hours ago", "2 days ago", "5 months ago", "1 year ago"
+        try:
+            parts = t.strip().lower().split()
+            if len(parts) < 3 or parts[-1] != "ago":
+                return None
+            num = int(parts[0])
+            unit = parts[1]
+            now = datetime.now(timezone.utc)
+            if unit.startswith("second"):
+                delta = timedelta(seconds=num)
+            elif unit.startswith("minute"):
+                delta = timedelta(minutes=num)
+            elif unit.startswith("hour"):
+                delta = timedelta(hours=num)
+            elif unit.startswith("day"):
+                delta = timedelta(days=num)
+            elif unit.startswith("week"):
+                delta = timedelta(weeks=num)
+            elif unit.startswith("month"):
+                # Approximate a month as 30 days
+                delta = timedelta(days=30 * num)
+            elif unit.startswith("year"):
+                delta = timedelta(days=365 * num)
+            else:
+                return None
+            return now - delta
+        except Exception:
+            return None
+
+    try:
+        vs = VideosSearch(query, limit=max(20, max_results))
+        res = vs.result() or {}
+    except Exception as e:  # pragma: no cover
+        logger.error("YouTube fallback search failed: %s", e)
+        return []
+    raw: List[tuple[VideoItem, Optional[datetime], Optional[int]]] = []
     for r in res.get("result", []):
         vid = r.get("id")
         title = r.get("title") or "(untitled)"
@@ -136,10 +178,17 @@ def search_videos(query: str, max_results: int = 10, use_official_api: Optional[
         url = r.get("link") or (f"https://www.youtube.com/watch?v={vid}" if vid else None)
         views_text = (r.get("viewCount") or {}).get("text") or r.get("views")
         views = _parse_view_count(views_text) if views_text else None
+        published_text = r.get("publishedTime") or r.get("publishedTimeText")
+        pdt = _parse_published_time(published_text)
         if vid and url:
-            items.append(VideoItem(video_id=vid, title=title, url=url, channel=channel, view_count=views))
-    items.sort(key=lambda x: (x.view_count or -1), reverse=True)
-    return items[:max_results]
+            raw.append((VideoItem(video_id=vid, title=title, url=url, channel=channel, view_count=views), pdt, views))
+    # Prefer newest first if we have published times, else fallback to view count
+    if any(p is not None for _, p, _ in raw):
+        raw.sort(key=lambda t: (t[1] or datetime.fromtimestamp(0, tz=timezone.utc)), reverse=True)
+    else:
+        raw.sort(key=lambda t: (t[2] or -1), reverse=True)
+    items = [t[0] for t in raw[:max_results]]
+    return items
 
 
 def fetch_transcript_text(video_id: str, prefer_langs: Optional[List[str]] = None) -> Optional[str]:

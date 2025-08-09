@@ -128,25 +128,99 @@ def find_next_game(team_id: int, from_dt: datetime | None = None, search_days: i
 
 
 def get_team_stats(team_id: int, season: int | None = None) -> dict:
-    """Return aggregated team stats for hitting and pitching."""
+    """Return aggregated team stats for hitting and pitching.
+
+    Primary source: `GET /teams/stats` with groups [hitting, pitching]. This endpoint
+    returns league-wide splits; we filter by the provided `team_id`.
+    Fallbacks: `/teams/{teamId}/stats` and a hydrate call via `/teams`.
+    """
     if season is None:
         season = datetime.now().year
-    params = {
-        "group": "hitting,pitching",
-        "stats": "season",
-        "season": season,
-        "sportIds": 1,
-    }
-    resp = _session.get(f"{STATS_API}/teams/{team_id}/stats", params=params, timeout=20)
-    resp.raise_for_status()
-    data = resp.json() or {}
-    results = (data.get("stats") or [])
+    params_list = [
+        ("group", "hitting"),
+        ("group", "pitching"),
+        ("stats", "season"),
+        ("season", season),
+        ("sportId", 1),
+    ]
     out: dict = {"season": season}
-    for r in results:
-        group = (r.get("group") or {}).get("displayName")
-        totals = (r.get("splits") or [{}])[0].get("stat", {})
-        if group:
-            out[group.lower()] = totals
+
+    # Primary: league endpoint; filter to our team
+    try:
+        resp = _session.get(f"{STATS_API}/teams/stats", params=params_list, timeout=20)
+        resp.raise_for_status()
+        data = resp.json() or {}
+        results = (data.get("stats") or [])
+        for r in results:
+            group = (r.get("group") or {}).get("displayName")
+            if not group:
+                continue
+            splits = r.get("splits") or []
+            # Find the split for our team
+            team_stat: dict = {}
+            for sp in splits:
+                team_obj = (sp.get("team") or {})
+                if team_obj.get("id") == team_id:
+                    team_stat = (sp.get("stat") or {})
+                    break
+            if team_stat:
+                out[group.lower()] = team_stat
+        if out.get("hitting") or out.get("pitching"):
+            return out
+    except Exception as e:
+        logger.debug("/teams/stats primary fetch failed: %s", e)
+
+    # Fallback 1: per-team endpoint
+    try:
+        resp = _session.get(f"{STATS_API}/teams/{team_id}/stats", params=params_list, timeout=20)
+        resp.raise_for_status()
+        data = resp.json() or {}
+        results = (data.get("stats") or [])
+        for r in results:
+            group = (r.get("group") or {}).get("displayName")
+            splits = r.get("splits") or []
+            totals: dict = {}
+            for s in splits:
+                st = (s or {}).get("stat") or {}
+                if st:
+                    totals = st
+                    break
+            if group:
+                out[group.lower()] = totals
+        if out.get("hitting") or out.get("pitching"):
+            return out
+    except Exception as e:
+        logger.debug("/teams/{teamId}/stats fallback failed: %s", e)
+
+    # Fallback 2: hydrate team stats from /teams endpoint
+    try:
+        hydrate = "teamStats(group=[hitting,pitching],type=[season])"
+        hparams = {
+            "teamId": team_id,
+            "season": season,
+            "sportId": 1,
+            "hydrate": hydrate,
+        }
+        hresp = _session.get(f"{STATS_API}/teams", params=hparams, timeout=20)
+        hresp.raise_for_status()
+        hdata = hresp.json() or {}
+        teams = hdata.get("teams") or []
+        if teams:
+            team0 = teams[0] or {}
+            tstats = team0.get("teamStats") or []
+            for ts in tstats:
+                # try group on ts or inside splits
+                ts_group = (ts.get("group") or {}).get("displayName")
+                for sp in (ts.get("splits") or []):
+                    group = ts_group or (sp.get("group") or {}).get("displayName")
+                    st = (sp or {}).get("stat") or {}
+                    if group and st:
+                        out[group.lower()] = st
+            return out
+    except Exception as e:
+        logger.debug("hydrate fallback failed: %s", e)
+        return out
+
     return out
 
 

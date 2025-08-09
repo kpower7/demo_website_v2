@@ -56,7 +56,7 @@ class NewsService:
                 from_param=from_date.strftime('%Y-%m-%d'),
                 to=to_date.strftime('%Y-%m-%d'),
                 language='en',
-                sort_by='popularity',
+                sort_by='publishedAt',
                 page_size=max_results,
             )
 
