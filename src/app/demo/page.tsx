@@ -13,10 +13,37 @@ export default function DemoPage() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [speakOn, setSpeakOn] = useState(true);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
+
+  async function playTTS(text: string) {
+    if (!speakOn) return;
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    try {
+      const resp = await fetch('/.netlify/functions/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: trimmed }),
+      });
+      if (!resp.ok) return;
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = audioRef.current;
+      if (!audio) return;
+      try {
+        audio.pause();
+      } catch {}
+      audio.src = url;
+      await audio.play().catch(() => {});
+    } catch {
+      // non-fatal for UI
+    }
+  }
 
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault();
@@ -47,6 +74,7 @@ export default function DemoPage() {
       // Basic display. Tool-call support can be added tomorrow.
       const content = msg?.content ?? '[No content]';
       setMessages(m => [...m, { role: 'assistant', content }]);
+      void playTTS(content);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       setMessages(m => [...m, { role: 'assistant', content: `Error: ${message}` }]);
@@ -72,6 +100,16 @@ export default function DemoPage() {
         <div className="grid md:grid-cols-2 gap-8 items-start">
           {/* Chat */}
           <div className="card p-4 h-[70vh] flex flex-col">
+            <div className="flex items-center gap-2 text-gray-300 mb-2">
+              <input
+                id="speak-toggle"
+                type="checkbox"
+                checked={speakOn}
+                onChange={(e) => setSpeakOn(e.target.checked)}
+                className="accent-cyan-400"
+              />
+              <label htmlFor="speak-toggle" className="cursor-pointer select-none">Speak replies</label>
+            </div>
             <div ref={listRef} className="flex-1 overflow-y-auto pr-2 space-y-3">
               {messages.map((m, i) => (
                 <div key={i} className={`rounded-lg p-3 ${m.role === 'user' ? 'bg-blue-600/30 border border-blue-500/30 ml-auto max-w-[85%]' : 'bg-slate-800/60 border border-blue-500/20 mr-auto max-w-[90%]'}`}>
@@ -118,6 +156,8 @@ export default function DemoPage() {
           </div>
         </div>
       </main>
+      {/* Hidden audio element used for TTS playback */}
+      <audio ref={audioRef} className="hidden" preload="auto" aria-hidden />
     </div>
   );
 }
