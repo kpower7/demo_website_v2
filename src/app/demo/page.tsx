@@ -67,7 +67,7 @@ export default function DemoPage() {
 
       <main className="container pb-16">
         <h1 className="text-4xl font-bold text-white mb-4">Live Demo</h1>
-        <p className="text-gray-300 mb-6">This chatbot uses a Netlify Function to call Hugging Face Router's OpenAI-compatible endpoint with GPT-OSS-120B (Grok). Tomorrow we can add tool-calling to your FastAPI backend.</p>
+        <p className="text-gray-300 mb-6">This chatbot uses a Netlify Function to call Hugging Face Router&#39;s OpenAI-compatible endpoint with GPT-OSS-120B (Grok). Tomorrow we can add tool-calling to your FastAPI backend.</p>
 
         <div className="grid md:grid-cols-2 gap-8 items-start">
           {/* Chat */}
@@ -104,7 +104,7 @@ export default function DemoPage() {
                 <li><b>Frontend</b>: Next.js 15 + Tailwind v4.</li>
                 <li><b>LLM Proxy</b>: Netlify Function <code>/.netlify/functions/chat</code> &rarr; Hugging Face Router.</li>
                 <li><b>Model</b>: <code>openai/gpt-oss-120b:groq</code>.</li>
-                <li><b>Backend</b>: FastAPI scaffold under <code>backend/</code> for tomorrow's tool-calling.</li>
+                <li><b>Backend</b>: FastAPI scaffold under <code>backend/</code> for tomorrow&#39;s tool-calling.</li>
               </ul>
             </div>
             <div className="card p-6">
