@@ -21,7 +21,7 @@ export default function Home() {
         </Link>
         <div className="hidden md:flex items-center gap-8 text-gray-300">
           <Link href="/" className="hover:text-cyan-400 transition-colors">Home</Link>
-          <a href="#demo" className="hover:text-cyan-400 transition-colors">Video</a>
+          <a href="#videos" className="hover:text-cyan-400 transition-colors">Videos</a>
           <Link href="/voice" className="hover:text-cyan-400 transition-colors">Voice</Link>
           <a href="mailto:kevpower@mit.edu" className="hover:text-cyan-400 transition-colors">Contact</a>
         </div>
@@ -45,7 +45,7 @@ export default function Home() {
         <div className="md:hidden relative z-10 border-t border-blue-500/20 bg-slate-900/95">
           <div className="container py-4 flex flex-col gap-4">
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Home</Link>
-            <a href="#demo" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Video</a>
+            <a href="#videos" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Videos</a>
             <Link href="/voice" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Voice</Link>
             <a href="mailto:kevpower@mit.edu" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-cyan-400">Contact</a>
           </div>
@@ -55,32 +55,24 @@ export default function Home() {
       {/* Hero */}
       <header className="relative z-10 container pt-12 pb-10 text-center">
         <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
-          Agentic AI Hackathon Template
+          MLB Voice + Betting Assistant
         </h1>
         <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
-          Next.js + Tailwind front-end, Netlify Functions + ElevenLabs Agent (GPT-5) for real-time voice, and a FastAPI backend scaffold for tool-calling.
+          Real-time voice agent powered by ElevenLabs (GPT-5) with a FastAPI tools backend (schedule, stats, news, YouTube) behind Netlify Functions. Concise scouting plus clear betting leans.
         </p>
         <p className="mt-3 text-cyan-300 font-semibold">Patent Pending • Built by Kevin Power</p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/voice" className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Try Voice Demo</Link>
-          <a href="#demo" className="px-8 py-4 rounded-full border-2 border-cyan-400 text-cyan-400 font-semibold hover:bg-cyan-400 hover:text-white transition-all">Watch Video</a>
+          <a href="#videos" className="px-8 py-4 rounded-full border-2 border-cyan-400 text-cyan-400 font-semibold hover:bg-cyan-400 hover:text-white transition-all">Watch Videos</a>
         </div>
       </header>
 
-      {/* Video Section */}
-      <section id="demo" className="relative z-10 container py-14">
-        <div className="grid lg:grid-cols-5 gap-10 items-center">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="card p-6">
-              <h3 className="text-lg font-semibold text-cyan-300 mb-2">Overview</h3>
-              <p className="text-gray-300">This template is optimized for fast iteration during hackathons. Swap the video link, customize copy, and ship to Netlify in minutes.</p>
-            </div>
-            <div className="card p-6">
-              <h3 className="text-lg font-semibold text-cyan-300 mb-2">Contact</h3>
-              <p className="text-gray-300">Email <a className="text-cyan-400 underline" href="mailto:kevpower@mit.edu">kevpower@mit.edu</a> for collaborations and enterprise demos.</p>
-            </div>
-          </div>
-          <div className="lg:col-span-3 card p-4">
+      {/* Videos Section */}
+      <section id="videos" className="relative z-10 container py-14">
+        <h2 className="text-3xl font-bold text-white text-center mb-10">Videos</h2>
+        <div className="grid md:grid-cols-2 gap-8 justify-items-center">
+          <div className="card p-4 w-full max-w-3xl">
+            <h3 className="text-lg font-semibold text-cyan-300 mb-3 text-center">Product Demo (≤60s)</h3>
             <div className="aspect-video rounded-xl overflow-hidden">
               <iframe
                 className="w-full h-full"
@@ -91,9 +83,56 @@ export default function Home() {
                 allowFullScreen
               />
             </div>
-            <div className="text-center mt-6">
-              <Link href="/voice" className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Go to Voice Demo</Link>
+          </div>
+          <div className="card p-4 w-full max-w-3xl">
+            <h3 className="text-lg font-semibold text-cyan-300 mb-3 text-center">Tech Overview (≤60s)</h3>
+            <div className="aspect-video rounded-xl overflow-hidden">
+              <iframe
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/IkbkEtOOC1Y"
+                title="Tech Video"
+                frameBorder={0}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
+          </div>
+        </div>
+        <div className="text-center mt-8">
+          <Link href="/voice" className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Go to Voice Demo</Link>
+        </div>
+      </section>
+
+      {/* Architecture Section */}
+      <section id="architecture" className="relative z-10 container py-14">
+        <h2 className="text-3xl font-bold text-white text-center mb-10">Architecture</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="card p-6">
+            <h3 className="text-lg font-semibold text-cyan-300 mb-2">Stack</h3>
+            <ul className="text-gray-300 list-disc list-inside space-y-1">
+              <li>Next.js + Tailwind UI at <code>/voice</code></li>
+              <li>ElevenLabs Agent (GPT‑5) real‑time voice</li>
+              <li>Netlify Functions: tool proxy + WS broker</li>
+              <li>FastAPI backend: schedule, stats, news, YouTube</li>
+            </ul>
+          </div>
+          <div className="card p-6">
+            <h3 className="text-lg font-semibold text-cyan-300 mb-2">Data & Tools</h3>
+            <ul className="text-gray-300 list-disc list-inside space-y-1">
+              <li>MLB stats APIs for schedule & team metrics</li>
+              <li>NewsAPI for injuries and roster updates</li>
+              <li>YouTube search for recent analysis content</li>
+              <li>Team intelligence aggregator endpoint</li>
+            </ul>
+          </div>
+          <div className="card p-6">
+            <h3 className="text-lg font-semibold text-cyan-300 mb-2">Security</h3>
+            <ul className="text-gray-300 list-disc list-inside space-y-1">
+              <li>Token‑secured tool calls via Functions</li>
+              <li>Secrets in env: ELEVEN_API_KEY, TOOL_TOKEN, NEWS_API_KEY</li>
+              <li>Backend URL hidden behind the proxy</li>
+              <li>UTC‑safe scheduling and pinned deps</li>
+            </ul>
           </div>
         </div>
       </section>
