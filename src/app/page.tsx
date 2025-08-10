@@ -55,12 +55,12 @@ export default function Home() {
       {/* Hero */}
       <header className="relative z-10 container pt-12 pb-10 text-center">
         <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
-          MLB Voice + Betting Assistant
+          MLB Analyst & Betting Assistant
         </h1>
         <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
           Real-time voice agent powered by ElevenLabs (GPT-5) with a FastAPI tools backend (schedule, stats, news, YouTube) behind Netlify Functions. Concise scouting plus clear betting leans.
         </p>
-        <p className="mt-3 text-cyan-300 font-semibold">Patent Pending • Built by Kevin Power</p>
+        <p className="mt-3 text-cyan-300 font-semibold">Built by Kevin Power</p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/voice" className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all">Try Voice Demo</Link>
           <a href="#videos" className="px-8 py-4 rounded-full border-2 border-cyan-400 text-cyan-400 font-semibold hover:bg-cyan-400 hover:text-white transition-all">Watch Videos</a>
@@ -76,7 +76,7 @@ export default function Home() {
             <div className="aspect-video rounded-xl overflow-hidden">
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/IkbkEtOOC1Y"
+                src="https://www.youtube.com/embed/H-z0v4WMSco"
                 title="Demo Video"
                 frameBorder={0}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

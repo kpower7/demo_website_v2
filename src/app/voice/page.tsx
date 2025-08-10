@@ -204,7 +204,7 @@ export default function VoicePage() {
       {/* Hero */}
       <header className="relative z-10 container pt-12 pb-10 text-center">
         <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
-          Voice Coach (Real-time)
+          Betting Analyst (Real-Time)
         </h1>
         <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
           Use the floating voice widget to talk to the agent in real-time.
