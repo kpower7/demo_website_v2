@@ -41,6 +41,7 @@ cd "C:\Users\k_pow\OneDrive\Documents\MIT\MIT TPP\demo_website_v2\demo_website_v
 npm install
 netlify dev
 # For remote testing via live tunnel:
+#npx netlify-cli@latest dev --live
 # netlify dev --live
 ```
 Dev URLs
