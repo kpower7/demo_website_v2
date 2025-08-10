@@ -89,7 +89,7 @@ export default function Home() {
             <div className="aspect-video rounded-xl overflow-hidden">
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/KGfrxJeMHTQ"
+                src="https://www.youtube.com/embed/knhhYob-y-Q"
                 title="Tech Video"
                 frameBorder={0}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
