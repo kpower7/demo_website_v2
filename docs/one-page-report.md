@@ -1,73 +1,51 @@
 # MLB Real‑Time Voice + Betting Assistant — Technical One‑Pager
 
-## Overview
-A production‑ready MLB assistant that speaks, analyzes matchups, and provides concise betting leans. The web UI (Next.js) connects to an ElevenLabs Agent over WebSocket via a Netlify Function broker. All baseball intelligence (schedule, stats comparisons, news, YouTube) is served by a FastAPI backend and accessed by the agent through Netlify Function proxies with token authentication. The system is optimized for short, actionable replies and minimal tool calls.
+## 1. Challenge Tackled
+**Problem:** Baseball fans need quick, intelligent analysis for betting decisions but face fragmented data across multiple apps and websites. Traditional sports platforms lack conversational AI that synthesizes schedule, stats, injuries, and analysis into actionable betting insights.
 
-## Architecture
-- Frontend: Next.js (app router) at `/voice` with the ElevenLabs React SDK.
-- Real‑time voice: ElevenLabs Agent (GPT‑5) + signed WS URL from Netlify Function `netlify/functions/elevenSignedUrl.ts` using `ELEVEN_API_KEY`.
-- Tool bridge: Netlify Functions proxy POST requests to the backend and inject `x-tool-token` for auth.
-- Backend: FastAPI (`backend/`) exposes `/tools/*` endpoints and integrates MLB stats, NewsAPI, and YouTube search.
-- Deployment: Netlify (site + functions), Render (or similar) for FastAPI.
+**User:** Baseball fans, casual bettors, and fantasy players who want data-driven betting guidance without manual research across multiple sources.
 
+## 2. Tools / ML Models Used
+- **ElevenLabs Agent (GPT-5)** – Real-time voice reasoning and tool orchestration
+- **FastAPI** – Backend API framework with 5 specialized tool endpoints
+- **MLB Stats API** – Live schedule data and team statistics
+- **NewsAPI** – Injury updates and roster news
+- **YouTube Data API v3** – Recent analysis and highlight content
+- **Next.js + Tailwind** – Frontend UI and voice integration
+- **Netlify Functions** – Secure tool proxy and WebSocket broker
+
+## 3. What Worked Well
+- **Sub-second voice responses** with full-duplex audio via ElevenLabs Agent platform
+- **Intelligent tool chaining** – agent automatically calls schedule → compare_stats when analyzing matchups
+- **Robust data integration** – 5 specialized endpoints delivering schedule, stats, news, YouTube, and team intelligence
+- **Production-grade security** – token authentication, environment secrets, proxy architecture
+- **Betting guidance system** – transparent "lean/pass" recommendations with confidence levels based on real metrics
+
+## 4. What Was Challenging
+- **Timezone handling** – MLB API returned naive datetimes causing comparison errors; fixed by normalizing all times to UTC-aware
+- **YouTube API reliability** – Initial dependency conflicts with httpx versions; resolved by pinning httpx to >=0.24.1,<0.25
+- **MLB stats data structure** – API responses varied by team/season; added robust scanning of splits with multiple fallback paths
+- **Real-time voice latency** – Needed sub-second responses; optimized by minimizing tool calls and intelligent chaining logic
+- **Security architecture** – Required hiding backend URLs while maintaining auth; solved with Netlify Function proxy layer
+
+## 5. How You Spent Your Time
+**Solo 24-hour build approach:**
+- **0–4h:** Research ElevenLabs Agent platform, design voice + tool architecture
+- **4–10h:** FastAPI backend development – 5 tool endpoints, MLB/News/YouTube integration
+- **10–16h:** Netlify Functions proxy layer, authentication, CORS handling
+- **16–20h:** Frontend voice UI, ElevenLabs React SDK integration, WebSocket broker
+- **20–22h:** Production deployment (Netlify + Render), environment configuration
+- **22–24h:** Bug fixes (timezone, dependencies), betting prompt refinement, video creation
+
+## Architecture Overview
 ```
-Browser <-> Netlify (site)
-  ├─ ElevenLabs WS broker -> ElevenLabs Agent (audio I/O)
-  └─ Tools (Functions) -> FastAPI backend -> MLB/NewsAPI/YouTube
+Browser <-> Netlify (site + functions)
+  ├─ ElevenLabs WS broker -> ElevenLabs Agent (GPT-5)
+  └─ Tool proxies -> FastAPI backend -> MLB/NewsAPI/YouTube
 ```
 
-## Key Components (paths)
-- Frontend page: `src/app/voice/page.tsx`
-- WS broker: `netlify/functions/elevenSignedUrl.ts`
-- Tool proxies: `netlify/functions/tools*.ts` → `_lib/toolsProxy.ts`
-- Backend app: `backend/main.py`
-- Services: `backend/mlb_service.py`, `backend/news_service.py`, `backend/youtube_service.py`, `backend/sports_data_service.py`
-
-## Tool Endpoints (contracts)
-- `check_schedule` → next game + schedule window. Inputs: `team`, `days`, optional `from_iso`.
-- `compare_stats` → season team vs team (hitting: AVG/OBP/SLG, R, HR; pitching: ERA/WHIP/K).
-- `news` → recent articles (NewsAPI). Inputs: `team`, `days_back`, `max_results`.
-- `youtube` → recent analysis/highlights. Inputs: `query` or `team`, `max_results`.
-- `team_intelligence` → compact scouting report from News + YouTube.
-All endpoints require header `x-tool-token` and accept body `tool_token` for redundancy; POST JSON only.
-
-## Security & Privacy
-- Secrets in environment variables only: `TOOL_TOKEN`, `ELEVEN_API_KEY`, `NEWS_API_KEY`, `YOUTUBE_API_KEY`.
-- Netlify Functions are the only public tool URLs; backend URL is private behind the proxy.
-- CORS controlled at the proxy; tokens never rendered in user UI.
-
-## Reliability & Quality
-- Timezone‑aware scheduling (UTC) to avoid naive/aware datetime errors.
-- YouTube: pinned dependencies and safe fallback search; sorts by recency.
-- MLB stats: robust scanning of splits; fallback paths when an API variant changes.
-- Graceful empty states with actionable guidance (e.g., increase `days_back`).
-
-## Performance
-- Minimize tool calls; chain only when it adds value (e.g., schedule → compare_stats).
-- Functions are stateless and fast; backend endpoints are lightweight with selective fields.
-- Audio is streamed by ElevenLabs for low latency.
-
-## Betting Layer
-- The agent provides “leans” (side/total or pass) with low/medium/high confidence.
-- Grounds decisions in: schedule context, injuries/news, hitting/pitching metrics, and rest/home‑away splits.
-- No odds scraping; if the user supplies a line/price, incorporate it. Always include a brief disclaimer.
-
-## Deployment
-- Netlify site URL (prod): `https://live-ai-demo.netlify.app/`
-- Function base: `https://live-ai-demo.netlify.app/.netlify/functions/`
-- Backend base: set via `BACKEND_BASE_URL` in Netlify; backend hosts `TOOL_TOKEN`, `NEWS_API_KEY`, `YOUTUBE_API_KEY`.
-- Start commands: Netlify (auto); FastAPI `uvicorn main:app --host 0.0.0.0 --port ${PORT}`.
-
-## Environment Variables
-- Netlify: `BACKEND_BASE_URL`, `TOOL_TOKEN` (secret), `ELEVEN_API_KEY` (secret), optional `ELEVEN_AGENT_ID`.
-- Backend host: `TOOL_TOKEN`, `NEWS_API_KEY`, optional `YOUTUBE_API_KEY`.
-
-## Limitations & Future Work
-- No live odds provider; integrate a lines API for price‑aware EV suggestions.
-- Add player props tools, injury projections, and park/weather factors.
-- Cache recent tool results to reduce latency and quota usage.
-
-## Links
-- Live: `https://live-ai-demo.netlify.app/voice/`
-- GitHub: <repo URL>
-- API docs: `<BACKEND_BASE_URL>/docs`
+## Production Deployment
+- **Live site:** `https://live-ai-demo.netlify.app/voice/`
+- **Frontend:** Netlify (Next.js + Functions)
+- **Backend:** Render (FastAPI with 5 tool endpoints)
+- **Security:** Token-based auth, environment secrets, proxy isolation
