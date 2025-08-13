@@ -23,7 +23,11 @@ class NewsArticle:
 
 
 class NewsService:
-    """Service for fetching recent news articles about MLB teams."""
+    """Service for fetching recent news articles about a topic or team.
+
+    Note: This function is intentionally generic and does not inject any
+    MLB-specific keywords. It can be reused across different domains.
+    """
 
     def __init__(self) -> None:
         self.api_key = settings.NEWS_API_KEY or settings.news_api_key
@@ -40,7 +44,7 @@ class NewsService:
         max_results: int = 10,
     ) -> List[NewsArticle]:
         """
-        Search for recent news articles about a specific MLB team.
+        Search for recent news articles about a specific topic or team.
         """
         if not self.client:
             logger.error("NewsAPI client not initialized - missing API key")
@@ -49,7 +53,8 @@ class NewsService:
         try:
             to_date = datetime.now()
             from_date = to_date - timedelta(days=days_back)
-            query = f'"{team_name}" AND (MLB OR baseball OR "Major League Baseball")'
+            # Generic query: do not inject MLB-specific terms so this can be reused broadly
+            query = team_name.strip()
 
             response = self.client.get_everything(
                 q=query,
